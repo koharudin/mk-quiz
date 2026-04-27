@@ -1,73 +1,56 @@
 {
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The Laravel Framework.",
+    "name": "harishdurga/laravel-quiz",
+    "description": "Provides Quiz Functionality",
     "keywords": [
-        "framework",
-        "laravel"
+        "harishdurga",
+        "laravel-quiz"
     ],
+    "homepage": "https://github.com/harishdurga/laravel-quiz",
     "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Harish Durga",
+            "email": "durgaharish5@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
-        "php": "^8.0.2",
-        "guzzlehttp/guzzle": "^7.2",
-        "harishdurga/laravel-quiz": "^1.1",
-        "laravel/framework": "^9.19",
-        "laravel/passport": "^12.4",
-        "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7"
+        "php": ">=8.2.0",
+        "illuminate/support": "^11.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
-        "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "nunomaduro/larastan": "^2.0",
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^11.0"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Harishdurga\\LaravelQuiz\\": "src",
+            "Harishdurga\\LaravelQuiz\\Database\\Factories\\": "database/factories",
+            "Harishdurga\\LaravelQuiz\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Harishdurga\\LaravelQuiz\\Tests\\": "tests"
         }
     },
     "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi"
-        ]
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "providers": [
+                "Harishdurga\\LaravelQuiz\\LaravelQuizServiceProvider"
+            ],
+            "aliases": {
+                "LaravelQuiz": "Harishdurga\\LaravelQuiz\\LaravelQuizFacade"
+            }
         }
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "audit": {
-            "block-insecure": false
-        },
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    }
 }
