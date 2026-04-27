@@ -1,0 +1,29 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
+      - fe
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./be:/var/www
+      - ./be/public:/var/www/html
+    ports:
+      - 92:80
+    tty: true
+  fe:
+    build:
+      context: .
+      dockerfile: fe.Dockerfile
+    volumes:
+      - ./fe/full-version:/app
+    ports:
+      - 3000
+    tty: true
