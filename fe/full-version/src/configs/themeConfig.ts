@@ -54,8 +54,8 @@ export type Config = {
 }
 
 const themeConfig: Config = {
-  templateName: 'Naskah REPO',
-  homePageUrl: '/dashboards/crm',
+  templateName: 'Tryout Media Kolaborasi',
+  homePageUrl: '/quizes',
   settingsCookieName: 'vuexy-mui-next-demo-1',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'

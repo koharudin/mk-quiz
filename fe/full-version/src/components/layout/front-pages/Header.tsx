@@ -79,16 +79,7 @@ const Header = ({ mode }: { mode: Mode }) => {
                 <i className='tabler-shopping-cart text-xl' />
               </CustomIconButton>
             ) : (
-              <Button
-                component={Link}
-                variant='contained'
-                href='https://1.envato.market/vuexy_admin'
-                startIcon={<i className='tabler-shopping-cart text-xl' />}
-                className='whitespace-nowrap'
-                target='_blank'
-              >
-                Purchase Now
-              </Button>
+              <></>
             )}
           </div>
         </div>

@@ -3,26 +3,19 @@
 import api from "@/utils/axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+// MUI Imports
+import Grid from '@mui/material/Grid2'
+import ListQuiz from "./ListQuiz";
+
+// Styles Imports
+import frontCommonStyles from '@views/front-pages/styles.module.css'
+import classnames from 'classnames'
 export default function Page() {
-    const [list, setList] = useState()
-    const onLoad = async function () {
-        const res = await api.get("/public/quiz")
-        setList(res?.data?.data)
-    }
-    useEffect(() => {
-        onLoad();
-    }, [])
-    return <>Daftar Quiz
-        <table>
-            <thead>
-                <tr>
-                    <th>Quiz Name</th>
-                    <th>#</th>
-                </tr>
-            </thead>
-            <tbody>
-                {list && list.map(function (r) {
-                    return <tr><td>{r.name}</td><td><Link href={r.slug}>Detail</Link><Link href={r.slug}>Coba</Link></td></tr>
-                })}</tbody></table>
-    </>
-}
+
+    return <section className={classnames('md:plb-[100px] plb-6', frontCommonStyles.layoutSpacing)}><Grid container spacing={6}>
+
+        <Grid size={{ xs: 12 }}>
+            <ListQuiz />
+        </Grid>
+    </Grid></section>
+} 
