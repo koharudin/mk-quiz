@@ -1,308 +1,103 @@
 'use client'
 
-// React Imports
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-// MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import TablePagination from '@mui/material/TablePagination'
-import type { TextFieldProps } from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 
-// Third-party Imports
-import classnames from 'classnames'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFacetedMinMaxValues,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-    createColumnHelper
-} from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
-import type { Column, Table, ColumnFiltersState, FilterFn, ColumnDef } from '@tanstack/react-table'
-import type { RankingInfo } from '@tanstack/match-sorter-utils'
-
-
-// Component Imports
-import TablePaginationComponent from '@components/TablePaginationComponent'
-import CustomTextField from '@core/components/mui/TextField'
-
-// Icon Imports
-import ChevronRight from '@menu/svg/ChevronRight'
-
-// Style Imports
-import styles from '@core/styles/table.module.css'
-import api from '@/utils/axios'
-import { Button } from '@mui/material'
 import Link from 'next/link'
 
+import styles from '@core/styles/table.module.css'
 
-const defaultData: DataType[] = [
-    {
-        id: 1,
-        avatar: '8.png',
-        fullName: "Korrie O'Crevy",
-        post: 'Nuclear Power Engineer',
-        email: 'kocrevy0@thetimes.co.uk',
-        city: 'Krasnosilka',
-        start_date: '09/23/2016',
-        salary: 23896.35,
-        age: 61,
-        experience: '1 Year',
-        status: 2
-    },
-];
-// Column Definitions
-const columnHelper = createColumnHelper<DataType>()
-
-declare module '@tanstack/table-core' {
-    interface FilterFns {
-        fuzzy: FilterFn<unknown>
-    }
-    interface FilterMeta {
-        itemRank: RankingInfo
-    }
-}
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    // Rank the item
-    const itemRank = rankItem(row.getValue(columnId), value)
-
-    // Store the itemRank info
-    addMeta({
-        itemRank
-    })
-
-    // Return if the item should be filtered in/out
-    return itemRank.passed
-}
-
-// A debounced input react component
-const DebouncedInput = ({
-    value: initialValue,
-    onChange,
-    debounce = 500,
-    ...props
-}: {
-    value: string | number
-    onChange: (value: string | number) => void
-    debounce?: number
-} & TextFieldProps) => {
-    // States
-    const [value, setValue] = useState(initialValue)
-
-    useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            onChange(value)
-        }, debounce)
-
-        return () => clearTimeout(timeout)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value])
-
-    return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
-
-const Filter = ({ column, table }: { column: Column<any, unknown>; table: Table<any> }) => {
-    // Vars
-    const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id)
-
-    const columnFilterValue = column.getFilterValue()
-
-    return typeof firstValue === 'number' ? (
-        <div className='flex gap-x-2'>
-            <CustomTextField
-                fullWidth
-                type='number'
-                sx={{ minInlineSize: 100, maxInlineSize: 125 }}
-                value={(columnFilterValue as [number, number])?.[0] ?? ''}
-                onChange={e => column.setFilterValue((old: [number, number]) => [e.target.value, old?.[1]])}
-                placeholder={`Min ${column.getFacetedMinMaxValues()?.[0] ? `(${column.getFacetedMinMaxValues()?.[0]})` : ''}`}
-            />
-            <CustomTextField
-                fullWidth
-                type='number'
-                sx={{ minInlineSize: 100, maxInlineSize: 125 }}
-                value={(columnFilterValue as [number, number])?.[1] ?? ''}
-                onChange={e => column.setFilterValue((old: [number, number]) => [old?.[0], e.target.value])}
-                placeholder={`Max ${column.getFacetedMinMaxValues()?.[1] ? `(${column.getFacetedMinMaxValues()?.[1]})` : ''}`}
-            />
-        </div>
-    ) : (
-        <CustomTextField
-            fullWidth
-            sx={{ minInlineSize: 100 }}
-            value={(columnFilterValue ?? '') as string}
-            onChange={e => column.setFilterValue(e.target.value)}
-            placeholder='Search...'
-        />
-    )
-}
+import api from '@/utils/axios'
 
 export type DataType = {
-    id: number
-    name: string
-    fullName: string
-    post: string
-    email: string
-    city: string
-    start_date: string
-    salary: number
-    age: number
-    experience: string
-    status: number
+  id: number
+  name: string
 }
-
 
 export default function ListQuiz() {
-    // States
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [globalFilter, setGlobalFilter] = useState('')
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [data, setData] = useState<DataType[]>(() => defaultData)
+  const [data, setData] = useState<DataType[]>([])
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
-    const onLoad = async function () {
-        const res = await api.get("/public/quiz")
-        setData(res?.data?.data)
-    }
-    useEffect(() => {
-        onLoad();
-    }, [])
-    // Hooks
-    const columns = useMemo<ColumnDef<DataType, any>[]>(
-        () => [
-            columnHelper.accessor('name', {
-                cell: info => info.getValue(),
-                header: 'Name'
-            })
-        ],
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-    )
+  const onLoad = async () => {
+   debugger
+    const res = await api.get('/public/quiz')
+     debugger
+    setData(res?.data?.data || [])
+  }
 
-    const table = useReactTable({
-        data,
-        columns,
-        filterFns: {
-            fuzzy: fuzzyFilter
-        },
-        state: {
-            columnFilters,
-            globalFilter
-        },
-        onColumnFiltersChange: setColumnFilters,
-        onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: fuzzyFilter,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
-        getFacetedMinMaxValues: getFacetedMinMaxValues()
-    })
+  useEffect(() => {
+    onLoad()
+  }, [])
 
-    useEffect(() => {
-        if (table.getState().columnFilters[0]?.id === 'fullName') {
-            if (table.getState().sorting[0]?.id !== 'fullName') {
-                table.setSorting([{ id: 'fullName', desc: false }])
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [table.getState().columnFilters[0]?.id])
+  // paging
+  const start = page * rowsPerPage
+  const end = start + rowsPerPage
 
-    return (
-        <Card>
-            <CardHeader
-                title='Daftar Quiz'
-                action={
-                    <DebouncedInput
-                        value={globalFilter ?? ''}
-                        onChange={value => setGlobalFilter(String(value))}
-                        placeholder='Search all columns...'
-                    />
-                }
-            />
-            <div className='overflow-x-auto'>
-                <table className={styles.table}>
-                    <thead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => {
-                                    return (
-                                        <th key={header.id}>
-                                            {header.isPlaceholder ? null : (
-                                                <>
-                                                    <div
-                                                        className={classnames({
-                                                            'flex items-center': header.column.getIsSorted(),
-                                                            'cursor-pointer select-none': header.column.getCanSort()
-                                                        })}
-                                                        onClick={header.column.getToggleSortingHandler()}
-                                                    >
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                                        {{
-                                                            asc: <ChevronRight fontSize='1.25rem' className='-rotate-90' />,
-                                                            desc: <ChevronRight fontSize='1.25rem' className='rotate-90' />
-                                                        }[header.column.getIsSorted() as 'asc' | 'desc'] ?? null}
-                                                    </div>
-                                                    {header.column.getCanFilter() && <Filter column={header.column} table={table} />}
-                                                </>
-                                            )}
-                                        </th>
-                                    )
-                                })}
-                            </tr>
-                        ))}
-                    </thead>
-                    {table.getFilteredRowModel().rows.length === 0 ? (
-                        <tbody>
-                            <tr>
-                                <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                                    No data available
-                                </td>
-                            </tr>
-                        </tbody>
-                    ) : (
-                        <tbody>
-                            {table.getRowModel().rows.map(row => {
-                                return (
-                                    <tr key={row.id}>
-                                        {row.getVisibleCells().map(cell => {
-                                            return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                                        })}
+  const paginatedData = data.slice(start, end)
 
-                                        <td><Button component={Link}
-                                            variant='contained'
-                                            href={'quiz' + "/" + row?.original.id + "/attempt"}
-                                            className='whitespace-nowrap'
-                                            target='_blank' size='small'>Start Attempt </Button></td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    )}
-                </table>
-            </div>
-            <TablePagination
-                component={() => <TablePaginationComponent table={table} />}
-                count={table.getFilteredRowModel().rows.length}
-                rowsPerPage={table.getState().pagination.pageSize}
-                page={table.getState().pagination.pageIndex}
-                onPageChange={(_, page) => {
-                    table.setPageIndex(page)
-                }}
-            />
-        </Card>
-    )
+  return (
+    <Card>
+      <CardHeader title='Daftar Quiz' />
+
+      <div className='overflow-x-auto'>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Quiz</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={3} className='text-center'>
+                  No data available
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map(row => (
+                <tr key={row.id}>
+                  <td>{row.id}</td>
+                  <td>{row.name}</td>
+
+                  <td>
+                    <Button
+                      component={Link}
+                      variant='contained'
+                      href={`/quiz/${row.id}/attempt`}
+                      target='_blank'
+                      size='small'
+                    >
+                      Start Attempt
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <TablePagination
+        component='div'
+        count={data.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={(event, newPage) => {
+          setPage(newPage)
+        }}
+        onRowsPerPageChange={event => {
+          setRowsPerPage(parseInt(event.target.value, 10))
+          setPage(0)
+        }}
+      />
+    </Card>
+  )
 }
-

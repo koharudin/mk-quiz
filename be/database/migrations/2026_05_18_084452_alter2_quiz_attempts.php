@@ -13,9 +13,7 @@ return new class extends Migration
     {
         //
         Schema::table('quiz_attempts', function (Blueprint $table) {
-            $table->bigInteger('duration')->default(0);// dalam 
-            $table->timestamp('start_time')->nullable();
-            $table->timestamp('end_time')->nullable();
+            $table->uuid('uuid')->nullable();
         });
     }
 

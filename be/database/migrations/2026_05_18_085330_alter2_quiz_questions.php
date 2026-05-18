@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
-        Schema::table('quiz_attempts', function (Blueprint $table) {
-            $table->bigInteger('duration')->default(0);// dalam 
-            $table->timestamp('start_time')->nullable();
-            $table->timestamp('end_time')->nullable();
+        //quiz_attempt_id
+         Schema::table('quiz_questions', function (Blueprint $table) {
+            $table->bigInteger('quiz_attempt_id');
         });
     }
 
